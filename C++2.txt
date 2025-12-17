@@ -1,0 +1,23 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+using namespace std;
+
+const string CRED_FILE = "users.txt";
+bool usernameExists(const string &username) {
+    ifstream fin(CRED_FILE);
+    if (!fin) return false; // file does not exist yet
+
+    string u, p;
+    while (fin >> u >> p) {
+        if (u == username) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void registerUser() {
+    string username, password;
+
+    cout << "=== Registration
