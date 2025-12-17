@@ -1,0 +1,59 @@
+#include <iostream>
+#include <iomanip>
+using namespace std;
+
+int main() {
+    int numCourses;
+    cout << "Enter number of courses this semester: ";
+    cin >> numCourses;
+
+    double gradePoint, credit;
+    double totalCreditsSem = 0.0;
+    double totalGradePointsSem = 0.0;
+
+    cout << "\nEnter grade points (e.g., 10, 9, 8...) and credit hours for each course.\n";
+    cout << "-------------------------------------------------------------\n";
+
+    for (int i = 1; i <= numCourses; ++i) {
+        cout << "Course " << i << " grade points: ";
+        cin >> gradePoint;
+        cout << "Course " << i << " credit hours: ";
+        cin >> credit;
+
+        totalCreditsSem += credit;
+        totalGradePointsSem += gradePoint * credit;
+
+        cout << "Course " << i << " => Grade points: " << gradePoint
+             << ", Credits: " << credit
+             << ", GradePoints x Credits: " << gradePoint * credit << "\n\n";
+    }
+
+    double gpaSem = 0.0;
+    if (totalCreditsSem > 0)
+        gpaSem = totalGradePointsSem / totalCreditsSem;
+
+    cout << fixed << setprecision(2);
+    cout << "Total credits this semester: " << totalCreditsSem << "\n";
+    cout << "Total grade points this semester: " << totalGradePointsSem << "\n";
+    cout << "Semester GPA: " << gpaSem << "\n\n";
+
+        double prevCgpa, prevCredits;
+    cout << "Enter previous overall CGPA (enter 0 if this is your first semester): ";
+    cin >> prevCgpa;
+    cout << "Enter total credits completed before this semester: ";
+    cin >> prevCredits;
+
+    double cgpa;
+    double totalGradePointsOverall = prevCgpa * prevCredits + totalGradePointsSem;
+    double totalCreditsOverall = prevCredits + totalCreditsSem;
+
+    if (totalCreditsOverall > 0)
+        cgpa = totalGradePointsOverall / totalCreditsOverall;
+    else
+        cgpa = 0.0;
+
+    cout << "\nTotal credits overall: " << totalCreditsOverall << "\n";
+    cout << "Final CGPA: " << cgpa << "\n";
+
+    return 0;
+}
