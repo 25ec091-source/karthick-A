@@ -1,0 +1,16 @@
+#include <iostream>
+using namespace std;
+
+const int N = 9;
+
+void printGrid(int grid[N][N]) {
+    for (int r = 0; r < N; r++) {
+        for (int c = 0; c < N; c++) {
+            cout << grid[r][c] << " ";
+        }
+        cout << "\n";
+    }
+}
+
+bool isSafe(int grid[N][N], int row, int col, int num) {
+    
