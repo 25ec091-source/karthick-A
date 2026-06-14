@@ -1,0 +1,257 @@
+import java.util.*;
+
+class Stock {
+    private String symbol;
+    private String name;
+    private double price;
+
+    public Stock(String symbol, String name, double price) {
+        this.symbol = symbol;
+        this.name = name;
+        this.price = price;
+    }
+
+    public String getSymbol() {
+        return symbol;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+}
+
+class Transaction {
+    private String type;
+    private String symbol;
+    private int quantity;
+    private double amount;
+
+    public Transaction(String type, String symbol,
+                       int quantity, double amount) {
+        this.type = type;
+        this.symbol = symbol;
+        this.quantity = quantity;
+        this.amount = amount;
+    }
+
+    @Override
+    public String toString() {
+        return type + " | " + symbol +
+               " | Qty: " + quantity +
+               " | Amount: ₹" + amount;
+    }
+}
+
+class Portfolio {
+    private HashMap<String, Integer> holdings;
+    private double cashBalance;
+    private ArrayList<Transaction> transactions;
+
+    public Portfolio(double initialCash) {
+        holdings = new HashMap<>();
+        transactions = new ArrayList<>();
+        cashBalance = initialCash;
+    }
+
+    public void buyStock(Stock stock, int quantity) {
+        double cost = stock.getPrice() * quantity;
+
+        if (cost > cashBalance) {
+            System.out.println("Insufficient balance!");
+            return;
+        }
+
+        cashBalance -= cost;
+
+        holdings.put(
+            stock.getSymbol(),
+            holdings.getOrDefault(stock.getSymbol(), 0) + quantity
+        );
+
+        transactions.add(
+            new Transaction("BUY",
+                    stock.getSymbol(),
+                    quantity,
+                    cost)
+        );
+
+        System.out.println("Stock purchased successfully.");
+    }
+
+    public void sellStock(Stock stock, int quantity) {
+
+        int owned =
+                holdings.getOrDefault(stock.getSymbol(), 0);
+
+        if (owned < quantity) {
+            System.out.println("Not enough shares.");
+            return;
+        }
+
+        double revenue = stock.getPrice() * quantity;
+
+        cashBalance += revenue;
+
+        holdings.put(
+            stock.getSymbol(),
+            owned - quantity
+        );
+
+        transactions.add(
+            new Transaction("SELL",
+                    stock.getSymbol(),
+                    quantity,
+                    revenue)
+        );
+
+        System.out.println("Stock sold successfully.");
+    }
+
+    public void displayPortfolio(List<Stock> marketStocks) {
+
+        System.out.println("\n===== PORTFOLIO =====");
+        System.out.println("Cash Balance: ₹" + cashBalance);
+
+        double totalValue = cashBalance;
+
+        for (Stock stock : marketStocks) {
+
+            int qty =
+                holdings.getOrDefault(stock.getSymbol(), 0);
+
+            if (qty > 0) {
+
+                double value =
+                    qty * stock.getPrice();
+
+                totalValue += value;
+
+                System.out.println(
+                    stock.getSymbol()
+                    + " : "
+                    + qty
+                    + " shares | Value ₹"
+                    + value
+                );
+            }
+        }
+
+        System.out.println("Total Portfolio Value: ₹"
+                + totalValue);
+    }
+
+    public void displayTransactions() {
+
+        System.out.println("\n===== TRANSACTION HISTORY =====");
+
+        for (Transaction t : transactions) {
+            System.out.println(t);
+        }
+    }
+}
+
+public class StockTradingSimulator {
+
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        ArrayList<Stock> market = new ArrayList<>();
+
+        market.add(new Stock("TCS",
+                "Tata Consultancy Services", 4200));
+
+        market.add(new Stock("INFY",
+                "Infosys", 1600));
+
+        market.add(new Stock("RELI",
+                "Reliance Industries", 3000));
+
+        Portfolio portfolio =
+                new Portfolio(100000);
+
+        int choice;
+
+        do {
+
+            System.out.println("\n====== STOCK MARKET ======");
+            System.out.println("1. View Market");
+            System.out.println("2. Buy Stock");
+            System.out.println("3. Sell Stock");
+            System.out.println("4. View Portfolio");
+            System.out.println("5. Transaction History");
+            System.out.println("6. Exit");
+
+            System.out.print("Enter choice: ");
+            choice = sc.nextInt();
+
+            switch (choice) {
+
+                case 1:
+                    System.out.println("\nAvailable Stocks");
+
+                    for (Stock s : market) {
+                        System.out.println(
+                                s.getSymbol()
+                                + " - "
+                                + s.getName()
+                                + " : ₹"
+                                + s.getPrice());
+                    }
+                    break;
+
+                case 2:
+                    System.out.print("Enter Symbol: ");
+                    String buySymbol = sc.next();
+
+                    System.out.print("Quantity: ");
+                    int buyQty = sc.nextInt();
+
+                    for (Stock s : market) {
+                        if (s.getSymbol()
+                                .equalsIgnoreCase(buySymbol)) {
+                            portfolio.buyStock(s, buyQty);
+                        }
+                    }
+                    break;
+
+                case 3:
+                    System.out.print("Enter Symbol: ");
+                    String sellSymbol = sc.next();
+
+                    System.out.print("Quantity: ");
+                    int sellQty = sc.nextInt();
+
+                    for (Stock s : market) {
+                        if (s.getSymbol()
+                                .equalsIgnoreCase(sellSymbol)) {
+                            portfolio.sellStock(s, sellQty);
+                        }
+                    }
+                    break;
+
+                case 4:
+                    portfolio.displayPortfolio(market);
+                    break;
+
+                case 5:
+                    portfolio.displayTransactions();
+                    break;
+
+                case 6:
+                    System.out.println("Exiting...");
+                    break;
+
+                default:
+                    System.out.println("Invalid Choice!");
+            }
+
+        } while (choice != 6);
+
+        sc.close();
+    }
+}
